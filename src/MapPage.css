@@ -1,0 +1,88 @@
+/* src/MapPage.css */
+
+/* Container for the map */
+.map-container {
+    width: 100%;
+    height: 500px; /* Adjust the height as needed */
+    border: 1px solid #ccc; /* Optional: Adds a border around the map */
+    margin-top: 20px; /* Adds some spacing above the map */
+  }
+  
+  /* Controls for the map (buttons and inputs) */
+  .map-controls {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px; /* Adds some space between buttons */
+  }
+  
+  .map-controls button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+    border: none;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .map-controls button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  .highlight-controls {
+    margin-top: 15px;
+  }
+  
+  .highlight-controls input {
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+  }
+  
+  /* Style for the highlighted moving point */
+  .moving-point {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    position: absolute; /* Ensures it's positioned correctly */
+    transform: translate(-50%, -50%); /* Centers the point */
+  }
+  
+  /* Table container for the selected track points */
+  .table-container {
+    max-height: 200px; /* Height to display only 8 rows */
+    overflow-y: auto; /* Add vertical scrollbar */
+    margin-top: 10px; /* Adds spacing above the table */
+    border: 1px solid #ddd; /* Light border around the table */
+  }
+  
+  /* Table styling */
+  .table-container table {
+    width: 100%;
+    border-collapse: collapse; /* Removes gaps between cells */
+  }
+  
+  .table-container th,
+  .table-container td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ddd; /* Light border for rows */
+  }
+  
+  .table-container tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row color */
+  }
+  
+  /* Highlight selected row */
+  .table-container tr:hover {
+    background-color: #f1f1f1; /* Hover effect for rows */
+  }
+  
+  .table-container tr.selected {
+    background-color: lightblue; /* Background color for selected row */
+  }
+  

@@ -1,0 +1,51 @@
+/* src/App.css */
+
+/* Navigation Menu Styles */
+.navbar {
+  background-color: #333;
+  padding: 10px;
+}
+
+.navbar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.navbar li {
+  margin-right: 20px;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+/* General Reset and Box Sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Style for the entire application */
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+body {
+  background-color: #f8f8f8;
+  margin: 0;
+}
+
+h2 {
+  margin-bottom: 20px;
+}

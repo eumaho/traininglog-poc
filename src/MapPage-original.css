@@ -1,0 +1,29 @@
+.map-container {
+    width: 100%;
+    height: 500px; /* Adjust the height as needed */
+  }
+  
+  .map-controls {
+    margin-top: 10px;
+  }
+  
+  .map-controls button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .moving-point {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+  
+  /* Add this to your MapPage.css */
+.table-container {
+  max-height: 200px; /* Adjust this height to fit 8 rows */
+  overflow-y: auto; /* Add vertical scrollbar */
+  margin-top: 10px; /* Optional: Add some spacing */
+}
