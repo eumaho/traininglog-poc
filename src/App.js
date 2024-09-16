@@ -3,6 +3,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import MapPage from './MapPage'; // Import the main page component
+import MapPage2 from './MapPage2'; // Import the map page 2 component
 import './App.css'; // Import your global styles
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
                     <ul>
                         <li><Link to="/">Home</Link></li>
                         <li><Link to="/map">Map Page</Link></li>
+                        <li><Link to="/map2">Map Page 2</Link></li>
                     </ul>
                 </nav>
 
@@ -21,6 +23,7 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/map" element={<MapPage />} />
+                    <Route path="/map2" element={<MapPage2 />} />
                 </Routes>
             </div>
         </Router>
