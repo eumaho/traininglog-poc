@@ -52,6 +52,9 @@ const Header = () => {
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
             >
+              <MenuItem onClick={handleMenuClose} component={Link} to="/ride-summary-page">
+                Ride Summary Page
+              </MenuItem>
               <MenuItem onClick={handleMenuClose} component={Link} to="/map-page-1">
                 MapPage1
               </MenuItem>
