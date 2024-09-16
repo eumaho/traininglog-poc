@@ -1,69 +1,69 @@
 import { gpx } from '@mapbox/togeojson';
 import { calculateDistance } from './distanceCalculator'; // Import the distance calculation utility
 
-/**
- * Fetches and parses GPX data from a file, adds it to the map, and processes track points.
- * @param {Object} map - The Mapbox map instance.
- * @param {Function} setSelectedPoints - State setter for selected points.
- * @param {Object} trackPointsRef - Reference to track points array.
- */
-/**
- * Fetches and parses GPX data from a file, adds it to the map, and processes track points.
- * @param {Object} map - The Mapbox map instance.
- * @param {Function} callback - Callback function to update the state.
- * @param {Object} trackPointsRef - Reference to track points array.
- */
+
+
 export const fetchGPXData = (map, callback, trackPointsRef) => {
-  if (!map) return;
+  console.error('inside fetchGPXData-1');
 
-  // Check if the source already exists
-  if (!map.getSource('mapbox-dem')) {
-    map.addSource('mapbox-dem', {
-      type: 'raster-dem',
-      url: 'mapbox://mapbox.terrain-rgb',
-      tileSize: 512,
-      maxzoom: 14,
-    });
-    map.setTerrain({ source: 'mapbox-dem', exaggeration: 2.5 });
+  const onMapLoaded = () => {
+    if (!map.getSource('mapbox-dem')) {
+      map.addSource('mapbox-dem', {
+        type: 'raster-dem',
+        url: 'mapbox://mapbox.terrain-rgb',
+        tileSize: 512,
+        maxzoom: 14,
+      });
+
+      map.setTerrain({ source: 'mapbox-dem', exaggeration: 2.5 });
+    }
+
+    console.error('inside fetchGPXData-2');
+
+    // Fetch the GPX data
+    fetch('/Early_morning_ride.gpx')
+      .then((response) => response.text())
+      .then((gpxData) => {
+        const parser = new DOMParser();
+        const gpxXml = parser.parseFromString(gpxData, 'application/xml');
+        const geojson = gpx(gpxXml);
+
+        // Extract track point data
+        trackPointsRef.current = extractGPXData(gpxXml);
+
+        if (!map.getSource('gpx-route')) {
+          map.addSource('gpx-route', { type: 'geojson', data: geojson });
+
+          map.addLayer({
+            id: 'gpx-route',
+            type: 'line',
+            source: 'gpx-route',
+            layout: { 'line-join': 'round', 'line-cap': 'round' },
+            paint: { 'line-color': '#ff0000', 'line-width': 3 },
+          });
+        } else {
+          // If source already exists, update it
+          map.getSource('gpx-route').setData(geojson);
+        }
+
+        console.log('GPX data loaded and added to map.');
+        callback();
+      })
+      .catch((error) => {
+        console.error('Error loading GPX data:', error);
+      });
+  };
+
+  // Check if the map is already loaded
+  if (map.isStyleLoaded()) {
+    onMapLoaded(); // Run the logic immediately if already loaded
+  } else {
+    map.on('load', onMapLoaded); // Otherwise, wait for the load event
   }
-
-  fetch('/Early_morning_ride.gpx')
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Failed to fetch GPX file: ${response.statusText}`);
-      }
-      return response.text();
-    })
-    .then((gpxData) => {
-      const parser = new DOMParser();
-      const gpxXml = parser.parseFromString(gpxData, 'application/xml');
-
-      if (!gpxXml) {
-        console.error('Failed to parse GPX XML');
-        return;
-      }
-
-      const geojson = gpx(gpxXml);
-      trackPointsRef.current = extractGPXData(gpxXml);
-
-      // Update map with new GPX data
-      if (map.getSource('gpx-route')) {
-        map.getSource('gpx-route').setData(geojson);
-      } else {
-        map.addSource('gpx-route', { type: 'geojson', data: geojson });
-        map.addLayer({
-          id: 'gpx-route',
-          type: 'line',
-          source: 'gpx-route',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#ff0000', 'line-width': 3 },
-        });
-      }
-
-      callback(); // Call callback to update state
-    })
-    .catch((error) => console.error('Error fetching or processing GPX file:', error));
 };
+
+
+
 
 /**
  * Extracts track point data from the GPX XML.

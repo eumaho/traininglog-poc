@@ -15,7 +15,7 @@ const MapPage = () => {
   const drawRef = useRef(null);
   const tooltipRef = useRef(new mapboxgl.Popup({ closeButton: false, closeOnClick: false }));
   const markerRef = useRef(null); 
-  const [selectedPoints, setSelectedPoints] = useState([]);
+  const [selectedPoints, setSelectedPoints] = useState([]); // Initialize selectedPoints correctly
   const [selectedRow, setSelectedRow] = useState(null); 
   const [speedThreshold, setSpeedThreshold] = useState(''); 
   const [thresholdToHighlight, setThresholdToHighlight] = useState(null); // State to control when to highlight

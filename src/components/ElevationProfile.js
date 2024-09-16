@@ -34,7 +34,7 @@ const ElevationProfile = ({ trackPoints, onPointClick }) => {
   const cadenceData = trackPoints.map((point) => point.cadence);
 
   // Calculate dynamic max values
-  const maxElevation = Math.max(...elevationData) + 200;
+  const maxElevation = Math.max(...elevationData) + 100;
   const maxSpeed = Math.max(...speedData) + 10;
   const maxPower = Math.max(...powerData) + 100;
   const maxCadence = Math.max(...cadenceData) + 20;
@@ -207,7 +207,7 @@ const ElevationProfile = ({ trackPoints, onPointClick }) => {
       <button onClick={exportToExcel} style={{ marginBottom: '10px' }}>
         Export Elevation Profile Data to Excel
       </button>
-      <div style={{ width: '1000px' }}>
+      <div style={{ width: '800px', height: '250px' }}>
         <Line data={data} options={options} />
       </div>
     </div>
