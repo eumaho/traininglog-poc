@@ -16,6 +16,7 @@ const App = () => {
         <Header /> {/* Header component will handle navigation */}
         <Box component="main" sx={{ flexGrow: 1, py: 4 }}>
           <Routes>
+          <Route path="/map-page-1" element={<MapPage />} /> {/* Route for MapPage2 */}
             <Route path="/map-page-2" element={<MapPage2 />} /> {/* Route for MapPage2 */}
           </Routes>
         </Box>

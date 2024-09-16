@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import { gpx } from '@mapbox/togeojson';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVectorSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import './MapPage.css';
-import { fetchGPXData, extractGPXData, highlightSections } from './utils/gpxParser';
+import { fetchGPXData, highlightSections } from './utils/gpxParser';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZWhvYmxlIiwiYSI6ImNtMHdiNmp1dDBiZHAyanB3eGFsOHVxejAifQ.rw5lt1bT5x0av6vyKh1lbQ';
 
@@ -15,10 +14,10 @@ const MapPage = () => {
   const drawRef = useRef(null);
   const tooltipRef = useRef(new mapboxgl.Popup({ closeButton: false, closeOnClick: false }));
   const markerRef = useRef(null); 
-  const [selectedPoints, setSelectedPoints] = useState([]); // Initialize selectedPoints correctly
+  const [selectedPoints, setSelectedPoints] = useState([]); 
   const [selectedRow, setSelectedRow] = useState(null); 
   const [speedThreshold, setSpeedThreshold] = useState(''); 
-  const [thresholdToHighlight, setThresholdToHighlight] = useState(null); // State to control when to highlight
+  const [thresholdToHighlight, setThresholdToHighlight] = useState(null);
 
   const trackPointsRef = useRef([]); 
 
@@ -45,7 +44,11 @@ const MapPage = () => {
     map.addControl(draw);
     drawRef.current = draw;
 
-    fetchGPXData(map, setSelectedPoints, trackPointsRef);
+    // Call fetchGPXData and pass the callback to set selected points
+    fetchGPXData(map, () => {
+      // Use the data loaded by fetchGPXData
+      setSelectedPoints([...trackPointsRef.current]); // Update state with fetched data
+    }, trackPointsRef);
 
     map.on('click', (e) => handleMapClick(e, map, trackPointsRef.current));
 
@@ -71,7 +74,7 @@ const MapPage = () => {
       alert('Please enter a valid number.');
       return;
     }
-    setThresholdToHighlight(threshold); // Update state to trigger highlighting
+    setThresholdToHighlight(threshold);
   };
 
   const handleMapClick = (e, map, trackPoints) => {
@@ -133,7 +136,7 @@ const MapPage = () => {
   };
 
   const activateRectangleTool = () => {
-    drawRef.current.changeMode('draw_rectangle'); // Set the mode to draw rectangle
+    drawRef.current.changeMode('draw_rectangle'); 
   };
 
   const deleteSelected = () => {
@@ -143,7 +146,6 @@ const MapPage = () => {
     if (markerRef.current) markerRef.current.remove(); 
   };
 
-  // Function to handle the selection of track points within a drawn rectangle
   const handleSelection = (e, trackPoints) => {
     const selectedArea = e.features[0];
     const selectedPolygon = selectedArea.geometry.coordinates[0];
@@ -195,9 +197,8 @@ const MapPage = () => {
   return (
     <div>
       <h2>Map Page</h2>
-      <div ref={mapContainerRef} className="map-container" />
+      <div ref={mapContainerRef} className="map-container" style={{ width: '50%', margin: 'auto' }} /> {/* Adjusted width to make map smaller */}
 
-      {/* Controls for Highlighting Sections */}
       <div className="highlight-controls">
         <input
           type="number"
@@ -210,7 +211,6 @@ const MapPage = () => {
         </button>
       </div>
 
-      {/* Add buttons to control the map dynamically */}
       <div className="map-controls">
         <button onClick={() => adjustMap('left')}>Rotate Left</button>
         <button onClick={() => adjustMap('right')}>Rotate Right</button>

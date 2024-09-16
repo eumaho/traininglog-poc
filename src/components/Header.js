@@ -52,7 +52,9 @@ const Header = () => {
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
             >
-              {/* Use Link components to handle navigation */}
+              <MenuItem onClick={handleMenuClose} component={Link} to="/map-page-1">
+                MapPage1
+              </MenuItem>
               <MenuItem onClick={handleMenuClose} component={Link} to="/map-page-2">
                 MapPage2
               </MenuItem>
