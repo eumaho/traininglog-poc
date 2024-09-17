@@ -33,8 +33,9 @@ const ElevationProfile = ({ trackPoints, onPointClick }) => {
   const powerData = trackPoints.map((point) => point.power);
   const cadenceData = trackPoints.map((point) => point.cadence);
 
-  // Calculate dynamic max values
+  // Calculate dynamic min and max values
   const maxElevation = Math.max(...elevationData) + 100;
+  const minElevation = Math.min(...elevationData) - 30;
   const maxSpeed = Math.max(...speedData) + 10;
   const maxPower = Math.max(...powerData) + 100;
   const maxCadence = Math.max(...cadenceData) + 20;
@@ -103,7 +104,7 @@ const ElevationProfile = ({ trackPoints, onPointClick }) => {
           display: true,
           text: 'Elevation (m)',
         },
-        min: 0,
+        min: minElevation,
         max: maxElevation, 
       },
       'y-speed': {

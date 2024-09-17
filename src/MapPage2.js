@@ -5,7 +5,7 @@ import ElevationProfile from './components/ElevationProfile';
 import * as XLSX from 'xlsx'; // Import the xlsx library for exporting data
 import './MapPage.css';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiZWhvYmxlIiwiYSI6ImNtMTU4M3VtYjA2cm4ya3B6eWFza3A0ZWkifQ.rBrzLp-hjHcdSCI-FPBEUw';
+mapboxgl.accessToken = 'pk.eyJ1IjoiZWhvYmxlIiwiYSI6ImNtMTZmZGxmbzBpOTMya3B4dzQ2ZHJwdXcifQ.jTruF_4TqVXkCCnduVT7BQ';
 
 const MapPage2 = () => {
   const mapContainerRef = useRef(null);
