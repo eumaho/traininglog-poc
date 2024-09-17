@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Box, Typography, IconButton, Grid, Badge, Paper } from '@mui/material';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import EventIcon from '@mui/icons-material/Event';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ActivityDetails from './ActivityDetails';
 
 const WeekOverview = ({ trainingData }) => {
-  const [currentWeekOffset, setCurrentWeekOffset] = useState(0); // Offset to determine which weeks are shown
-  const [selectedDay, setSelectedDay] = useState(null); // State to keep track of selected day
+  const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -17,37 +18,54 @@ const WeekOverview = ({ trainingData }) => {
     const firstDate = new Date(currentDate);
     const lastDate = new Date(currentDate.setDate(currentDate.getDate() + 6));
 
-    const formattedFirstDate = `${firstDate.getDate().toString().padStart(2, '0')}/${firstDate.toLocaleString('default', { month: 'short' })}`;
-    const formattedLastDate = `${lastDate.getDate().toString().padStart(2, '0')}/${lastDate.toLocaleString('default', { month: 'short' })}`;
-
     const startOfYear = new Date(firstDate.getFullYear(), 0, 1);
     const pastDaysOfYear = (firstDate - startOfYear + (startOfYear.getDay() + 1) * 86400000) / 86400000;
     const weekNumber = Math.ceil(pastDaysOfYear / 7);
 
+    const weekDates = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(firstDate);
+      date.setDate(firstDate.getDate() + i);
+      return date;
+    });
+
+    const monthLabel = getMonthLabel(firstDate, lastDate);
+
     return {
-      firstDate: formattedFirstDate,
-      lastDate: formattedLastDate,
+      firstDate,
+      lastDate,
       weekNumber,
+      weekDates,
+      monthLabel,
     };
   };
 
-  // Get the dates for the current and previous weeks based on the current offset
+  const getMonthLabel = (firstDate, lastDate) => {
+    const firstMonth = firstDate.toLocaleString('default', { month: 'short' });
+    const lastMonth = lastDate.toLocaleString('default', { month: 'short' });
+
+    if (firstMonth === lastMonth) {
+      return `${firstMonth}`; // Single month
+    } else {
+      return `${firstMonth}-${lastMonth}`; // Range of months
+    }
+  };
+
   const currentWeekDates = getWeekDates(currentWeekOffset);
   const previousWeekDates = getWeekDates(currentWeekOffset - 1);
 
   const handleDayClick = (day) => {
-    setSelectedDay(day); // Set the selected day when a day is clicked
+    setSelectedDay(day);
   };
 
   const handlePreviousWeekClick = () => {
-    setCurrentWeekOffset(currentWeekOffset - 1); // Navigate to the previous week
+    setCurrentWeekOffset(currentWeekOffset - 1);
   };
 
   const handleNextWeekClick = () => {
-    setCurrentWeekOffset(currentWeekOffset + 1); // Navigate to the next week
+    setCurrentWeekOffset(currentWeekOffset + 1);
   };
 
-  const renderDay = (week, day) => {
+  const renderDay = (week, day, dayNumber) => {
     const hasTrainingSession = trainingData[week] && trainingData[week][day];
 
     return (
@@ -56,19 +74,16 @@ const WeekOverview = ({ trainingData }) => {
         key={`${week}-${day}`}
         sx={{
           textAlign: 'center',
-          margin: '0 1px', // Minimize horizontal margin
+          margin: '0 1px',
+          position: 'relative',
         }}
       >
-        <Typography
-          variant="caption"
-          display="block"
-          sx={{ margin: '0' }} // Remove margin around Typography
-        >
+        <Typography variant="caption" display="block" sx={{ margin: '0' }}>
           {day}
         </Typography>
         <IconButton
           onClick={() => handleDayClick({ week, day })}
-          sx={{ padding: '0px' }} // Keep padding at 0px for IconButton
+          sx={{ padding: '0px', position: 'relative' }}
         >
           <Badge
             color="error"
@@ -78,75 +93,94 @@ const WeekOverview = ({ trainingData }) => {
           >
             <CalendarTodayIcon />
           </Badge>
+          <Typography
+            variant="caption"
+            display="block"
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -30%)',
+              fontSize: '0.75rem',
+              fontWeight: 'bold',
+              color: 'black',
+              pointerEvents: 'none',
+            }}
+          >
+            {dayNumber}
+          </Typography>
         </IconButton>
       </Grid>
     );
   };
 
-  const renderWeek = (week, weekLabel) => (
+  const renderWeekLabel = (weekDates) => (
+    <Typography
+      variant="body2"
+      sx={{
+        fontSize: '1rem',
+        marginBottom: '5px',
+        padding: '0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <span style={{ fontWeight: 'bold', marginRight: '5px' }}>
+        Week {weekDates.weekNumber},
+      </span>
+      <span style={{ margin: '0 5px', color: '#555' }}>
+        {weekDates.monthLabel} {weekDates.firstDate.getFullYear()}
+      </span>
+    </Typography>
+  );
+
+  const renderWeek = (week, weekDates) => (
     <Box
       sx={{
         textAlign: 'center',
-        margin: '0', // Remove margin around the week container
-        padding: '0', // Remove padding within the week container
+        margin: '0',
+        padding: '0',
       }}
     >
-      <Typography
-        variant="body2"
-        sx={{ fontSize: '0.9rem', marginBottom: '2px', padding: '0' }} // Minimize margin and padding
-      >
-        {weekLabel}
-      </Typography>
-      <Grid container justifyContent="center" alignItems="center" sx={{ gap: '1px' }}> {/* Minimize gap between day items */}
-        {daysOfWeek.map((day) => renderDay(week, day))}
+      {renderWeekLabel(weekDates)}
+      <Grid container justifyContent="center" alignItems="center" sx={{ gap: '1px' }}>
+        {daysOfWeek.map((day, index) => renderDay(week, day, weekDates.weekDates[index].getDate()))}
       </Grid>
     </Box>
   );
 
   return (
-    <Box sx={{ padding: '0' }}> {/* Remove outer padding */}
+    <Box sx={{ padding: '0' }}>
       <Paper
         elevation={3}
         sx={{
-          padding: '4px', // Minimize padding around Paper
+          padding: '4px',
           marginBottom: '0',
           display: 'flex',
           alignItems: 'center',
-          width: 'fit-content', // Use fit-content to size the component based on its content
+          width: 'fit-content',
           flexShrink: 1,
-          margin: '0 auto', // Center the component
+          margin: '0 auto',
           flexDirection: { xs: 'column', md: 'row' },
         }}
       >
-        {/* Left arrow for navigating to previous weeks */}
         <IconButton onClick={handlePreviousWeekClick} sx={{ padding: '0px' }}>
           <ChevronLeftIcon />
         </IconButton>
-
-        {/* Container for the week groups */}
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'center',
-            flexGrow: 0, // Set flexGrow to 0 to prevent expansion
-            gap: '10px', // Adjust gap between week groups
+            flexGrow: 0,
+            gap: '10px',
             flexWrap: 'wrap',
-            margin: '0', // Remove margin
+            margin: '0',
           }}
         >
-          {/* Previous week on the left */}
-          {renderWeek(
-            'previousWeek',
-            `${new Date().getFullYear()}, Week ${previousWeekDates.weekNumber} from ${previousWeekDates.firstDate} to ${previousWeekDates.lastDate}`
-          )}
-          {/* Current week on the right */}
-          {renderWeek(
-            'currentWeek',
-            `${new Date().getFullYear()}, Week ${currentWeekDates.weekNumber} from ${currentWeekDates.firstDate} to ${currentWeekDates.lastDate}`
-          )}
+          {renderWeek('previousWeek', previousWeekDates)}
+          {renderWeek('currentWeek', currentWeekDates)}
         </Box>
-
-        {/* Right arrow for navigating to next weeks */}
         {currentWeekOffset < 0 && (
           <IconButton onClick={handleNextWeekClick} sx={{ padding: '0px' }}>
             <ChevronRightIcon />
@@ -154,7 +188,6 @@ const WeekOverview = ({ trainingData }) => {
         )}
       </Paper>
 
-      {/* Display activities for the selected day */}
       {selectedDay && <ActivityDetails selectedDay={selectedDay} trainingData={trainingData} />}
     </Box>
   );
