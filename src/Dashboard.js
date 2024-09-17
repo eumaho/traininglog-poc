@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
-import WeekOverview from './components/WeekOverview'; // Adjust the path based on your file structure
-import ActivityDetails from './components/ActivityDetails'; // Adjust the path based on your file structure
+import WeekOverview from './components/WeekOverview';
+import ActivityDetails from './components/ActivityDetails';
 
-// Define training data
 const trainingData = {
   previousWeek: {
     Mon: [{ name: 'Cycling', duration: 60 }],
@@ -16,7 +15,6 @@ const trainingData = {
   },
 };
 
-// Define week summaries data
 const weekSummaries = {
   currentWeek: {
     hoursOfTraining: '15h 37m',
@@ -37,13 +35,54 @@ const weekSummaries = {
 };
 
 const Dashboard = () => {
+  const [selectedDay, setSelectedDay] = useState(null);
+
+  const handleDayClick = (day) => {
+    setSelectedDay(day);
+  };
+
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" gutterBottom>
         Dashboard
       </Typography>
-      {/* Pass both trainingData and weekSummaries to WeekOverview */}
-      <WeekOverview trainingData={trainingData} weekSummaries={weekSummaries} />
+
+      {/* Container to align both WeekOverview and ActivityDetails */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center', // Center align all content
+          width: '100%',
+          margin: '0 auto', // Center the container horizontally
+        }}
+      >
+        {/* WeekOverview and ActivityDetails components */}
+        <Box
+          sx={{
+            display: 'inline-flex', // Use inline-flex to wrap the content size
+            flexDirection: 'column', // Keep both components in a column layout
+            padding: '0px', // Remove extra padding
+            justifyContent: 'center', // Center content horizontally
+          }}
+        >
+          {/* WeekOverview Component */}
+          <WeekOverview
+            trainingData={trainingData}
+            weekSummaries={weekSummaries}
+            onDayClick={handleDayClick}
+          />
+
+          {/* ActivityDetails Component with extra space on top */}
+          <Box
+            sx={{
+              marginTop: '30px', // Add 30px space above ActivityDetails
+            }}
+          >
+            <ActivityDetails selectedDay={selectedDay} trainingData={trainingData} />
+          </Box>
+        </Box>
+      </Box>
     </Box>
   );
 };

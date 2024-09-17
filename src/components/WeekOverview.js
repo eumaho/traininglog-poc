@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Box, Typography, IconButton, Grid, Badge, Paper } from '@mui/material';
+import { Box, Typography, IconButton, Grid, Badge, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ActivityDetails from './ActivityDetails';
-import WeekSummary from './WeekSummary'; // Import the new WeekSummary component
+import WeekSummary from './WeekSummary'; // Import the WeekSummary component
 
-const WeekOverview = ({ trainingData, weekSummaries }) => {
+const WeekOverview = ({ trainingData, weekSummaries, onDayClick }) => {
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
   const [selectedDay, setSelectedDay] = useState(null);
 
@@ -54,7 +55,9 @@ const WeekOverview = ({ trainingData, weekSummaries }) => {
   const previousWeekDates = getWeekDates(currentWeekOffset - 1);
 
   const handleDayClick = (day) => {
-    setSelectedDay(day);
+    if (onDayClick) {
+      onDayClick(day); // Call the parent function when a day is clicked
+    }
   };
 
   const handlePreviousWeekClick = () => {
@@ -147,7 +150,42 @@ const WeekOverview = ({ trainingData, weekSummaries }) => {
       <Grid container justifyContent="center" alignItems="center" sx={{ gap: '1px' }}>
         {daysOfWeek.map((day, index) => renderDay(week, day, weekDates.weekDates[index].getDate()))}
       </Grid>
-      <WeekSummary summary={weekSummary} /> {/* Include WeekSummary component below the calendar */}
+      {/* Accordion to show/hide WeekSummary */}
+      <Accordion
+          sx={{
+            boxShadow: 'none', // Remove shadow
+            border: 'none', // Remove border around accordion
+            '&::before': { // Remove the default before pseudo-element border
+              display: 'none',
+            },
+          }}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+          sx={{
+            borderBottom: 'none', // Remove bottom border on summary
+            padding: '0px', // Remove padding if needed
+            minHeight: '0px', // Adjust the minimum height if needed
+            '& .MuiAccordionSummary-content': {
+              margin: '0', // Remove margin
+            },
+          }}
+        >
+        {/* Make the font smaller */}
+          <Typography variant="subtitle2" sx={{ fontSize: '0.875rem' }}></Typography>
+        </AccordionSummary>
+        <AccordionDetails
+          sx={{
+            padding: '0px', // Remove padding if needed
+            borderTop: 'none', // Remove top border on details
+          }}
+        >
+        {/* Apply a smaller font size to the WeekSummary component if needed */}
+        <WeekSummary summary={weekSummary} sx={{ fontSize: '0.875rem' }} />
+        </AccordionDetails>
+      </Accordion>
     </Box>
   );
 

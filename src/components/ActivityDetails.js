@@ -1,28 +1,37 @@
 import React from 'react';
-import { Box, Typography, Paper, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 const ActivityDetails = ({ selectedDay, trainingData }) => {
+  // If selectedDay is null or undefined, display a message or nothing
+  if (!selectedDay) {
+    return (
+      <Box sx={{ padding: 2 }}>
+        <Typography variant="body2" color="textSecondary">
+          No day selected. Please select a day to see the activity details.
+        </Typography>
+      </Box>
+    );
+  }
+
   const { week, day } = selectedDay;
-  const activities = trainingData[week] && trainingData[week][day] ? trainingData[week][day] : [];
+  const activities = trainingData[week] && trainingData[week][day];
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Paper elevation={3} sx={{ padding: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          Activities on {day}, {week}
+      <Typography variant="h6" gutterBottom>
+        Activities for {day} ({week})
+      </Typography>
+      {activities ? (
+        activities.map((activity, index) => (
+          <Typography key={index} variant="body1">
+            {activity.name} - {activity.duration} minutes
+          </Typography>
+        ))
+      ) : (
+        <Typography variant="body2" color="textSecondary">
+          No activities for this day.
         </Typography>
-        <List>
-          {activities.length > 0 ? (
-            activities.map((activity, index) => (
-              <ListItem key={index}>
-                <ListItemText primary={activity.name} secondary={`Duration: ${activity.duration} mins`} />
-              </ListItem>
-            ))
-          ) : (
-            <Typography variant="body1">No activities recorded for this day.</Typography>
-          )}
-        </List>
-      </Paper>
+      )}
     </Box>
   );
 };
