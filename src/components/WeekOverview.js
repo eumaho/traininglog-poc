@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Box, Typography, IconButton, Grid, Badge, Paper } from '@mui/material';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import EventIcon from '@mui/icons-material/Event';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ActivityDetails from './ActivityDetails';
+import WeekSummary from './WeekSummary'; // Import the new WeekSummary component
 
-const WeekOverview = ({ trainingData }) => {
+const WeekOverview = ({ trainingData, weekSummaries }) => {
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
   const [selectedDay, setSelectedDay] = useState(null);
 
@@ -135,7 +135,7 @@ const WeekOverview = ({ trainingData }) => {
     </Typography>
   );
 
-  const renderWeek = (week, weekDates) => (
+  const renderWeek = (week, weekDates, weekSummary) => (
     <Box
       sx={{
         textAlign: 'center',
@@ -147,6 +147,7 @@ const WeekOverview = ({ trainingData }) => {
       <Grid container justifyContent="center" alignItems="center" sx={{ gap: '1px' }}>
         {daysOfWeek.map((day, index) => renderDay(week, day, weekDates.weekDates[index].getDate()))}
       </Grid>
+      <WeekSummary summary={weekSummary} /> {/* Include WeekSummary component below the calendar */}
     </Box>
   );
 
@@ -178,8 +179,8 @@ const WeekOverview = ({ trainingData }) => {
             margin: '0',
           }}
         >
-          {renderWeek('previousWeek', previousWeekDates)}
-          {renderWeek('currentWeek', currentWeekDates)}
+          {renderWeek('previousWeek', previousWeekDates, weekSummaries.previousWeek)}
+          {renderWeek('currentWeek', currentWeekDates, weekSummaries.currentWeek)}
         </Box>
         {currentWeekOffset < 0 && (
           <IconButton onClick={handleNextWeekClick} sx={{ padding: '0px' }}>
