@@ -2,24 +2,16 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 
 const ActivityDetails = ({ selectedDay, trainingData }) => {
-  // If selectedDay is null or undefined, display a message or nothing
   if (!selectedDay) {
-    return (
-      <Box sx={{ padding: 2 }}>
-        <Typography variant="body2" color="textSecondary">
-          No day selected. Please select a day to see the activity details.
-        </Typography>
-      </Box>
-    );
+    return <Typography variant="body2">Please select a day to see activities.</Typography>;
   }
 
-  const { week, day } = selectedDay;
-  const activities = trainingData[week] && trainingData[week][day];
+  const activities = trainingData.currentWeek?.[selectedDay] || trainingData.previousWeek?.[selectedDay];
 
   return (
-    <Box sx={{ padding: 2 }}>
+    <Box>
       <Typography variant="h6" gutterBottom>
-        Activities for {day} ({week})
+        Activities for {selectedDay}
       </Typography>
       {activities ? (
         activities.map((activity, index) => (
@@ -28,9 +20,7 @@ const ActivityDetails = ({ selectedDay, trainingData }) => {
           </Typography>
         ))
       ) : (
-        <Typography variant="body2" color="textSecondary">
-          No activities for this day.
-        </Typography>
+        <Typography variant="body2">No activities found for this day.</Typography>
       )}
     </Box>
   );

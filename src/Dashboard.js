@@ -1,87 +1,40 @@
 import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
-import WeekOverview from './components/WeekOverview';
+import WeekOverview from './components/WeekOverview'; // Import the new WeekOverview component
 import ActivityDetails from './components/ActivityDetails';
+import dayjs from 'dayjs';
 
+// Updated training data structure using 'YYYY-MM-DD' as keys
 const trainingData = {
-  previousWeek: {
-    Mon: [{ name: 'Cycling', duration: 60 }],
-    Wed: [{ name: 'Running', duration: 30 }],
-    Fri: [{ name: 'Yoga', duration: 45 }],
-  },
-  currentWeek: {
-    Tue: [{ name: 'Swimming', duration: 40 }],
-    Thu: [{ name: 'Gym Workout', duration: 50 }],
-  },
-};
-
-const weekSummaries = {
-  currentWeek: {
-    hoursOfTraining: '15h 37m',
-    daysOfTraining: 4,
-    totalCalories: 6890,
-    distanceRunning: 17.94,
-    distanceCycling: 256.73,
-    restDays: ['Mon', 'Fri'],
-  },
-  previousWeek: {
-    hoursOfTraining: '12h 20m',
-    daysOfTraining: 3,
-    totalCalories: 5020,
-    distanceRunning: 10.5,
-    distanceCycling: 180.4,
-    restDays: ['Tue', 'Thu', 'Sun'],
-  },
+  '2024-09-09': [{ name: 'Cycling', duration: 60 }],
+  '2024-09-11': [{ name: 'Running', duration: 30 }],
+  '2024-09-13': [{ name: 'Yoga', duration: 45 }],
+  '2024-09-17': [{ name: 'Swimming', duration: 40 }],
+  '2024-09-19': [{ name: 'Gym Workout', duration: 50 }],
 };
 
 const Dashboard = () => {
   const [selectedDay, setSelectedDay] = useState(null);
 
   const handleDayClick = (day) => {
-    setSelectedDay(day);
+    setSelectedDay(day); // Set the clicked day in 'YYYY-MM-DD' format
   };
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
+    <Box sx={{ padding: 4, display: 'flex', justifyContent: 'space-between' }}>
+      {/* Main content on the left */}
+      <Box sx={{ flexGrow: 1 }}>
+        <Typography variant="h4" gutterBottom>
+          Dashboard
+        </Typography>
 
-      {/* Container to align both WeekOverview and ActivityDetails */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center', // Center align all content
-          width: '100%',
-          margin: '0 auto', // Center the container horizontally
-        }}
-      >
-        {/* WeekOverview and ActivityDetails components */}
-        <Box
-          sx={{
-            display: 'inline-flex', // Use inline-flex to wrap the content size
-            flexDirection: 'column', // Keep both components in a column layout
-            padding: '0px', // Remove extra padding
-            justifyContent: 'center', // Center content horizontally
-          }}
-        >
-          {/* WeekOverview Component */}
-          <WeekOverview
-            trainingData={trainingData}
-            weekSummaries={weekSummaries}
-            onDayClick={handleDayClick}
-          />
+        {/* Activity Details Component */}
+        <ActivityDetails selectedDay={selectedDay} trainingData={trainingData} />
+      </Box>
 
-          {/* ActivityDetails Component with extra space on top */}
-          <Box
-            sx={{
-              marginTop: '30px', // Add 30px space above ActivityDetails
-            }}
-          >
-            <ActivityDetails selectedDay={selectedDay} trainingData={trainingData} />
-          </Box>
-        </Box>
+      {/* WeekOverview (DateCalendar) on the right */}
+      <Box sx={{ minWidth: '250px', marginLeft: '20px' }}>
+        <WeekOverview trainingData={trainingData} onDayClick={handleDayClick} />
       </Box>
     </Box>
   );

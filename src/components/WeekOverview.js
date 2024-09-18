@@ -1,234 +1,87 @@
-import React, { useState } from 'react';
-import { Box, Typography, IconButton, Grid, Badge, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ActivityDetails from './ActivityDetails';
-import WeekSummary from './WeekSummary'; // Import the WeekSummary component
+import React, { useState, useEffect } from "react";
+import dayjs from "dayjs";
+import { Box, Badge } from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { StaticDatePicker, PickersDay } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-const WeekOverview = ({ trainingData, weekSummaries, onDayClick }) => {
-  const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
-  const [selectedDay, setSelectedDay] = useState(null);
+// Custom theme to remove OK and CANCEL buttons
+const THEME = createTheme({
+  components: {
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          display: 'none', // Hides the OK/Cancel buttons
+        },
+      },
+    },
+  },
+});
 
-  const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+// Custom day renderer to add badges for days with activities
+const CustomDay = (props) => {
+  const { day, outsideCurrentMonth, highlightedDays, ...other } = props;
 
-  const getWeekDates = (offsetWeeks = 0) => {
-    const now = new Date();
-    const currentDate = new Date(now.setDate(now.getDate() - now.getDay() + 1 + offsetWeeks * 7));
-    const firstDate = new Date(currentDate);
-    const lastDate = new Date(currentDate.setDate(currentDate.getDate() + 6));
-
-    const startOfYear = new Date(firstDate.getFullYear(), 0, 1);
-    const pastDaysOfYear = (firstDate - startOfYear + (startOfYear.getDay() + 1) * 86400000) / 86400000;
-    const weekNumber = Math.ceil(pastDaysOfYear / 7);
-
-    const weekDates = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(firstDate);
-      date.setDate(firstDate.getDate() + i);
-      return date;
-    });
-
-    const monthLabel = getMonthLabel(firstDate, lastDate);
-
-    return {
-      firstDate,
-      lastDate,
-      weekNumber,
-      weekDates,
-      monthLabel,
-    };
-  };
-
-  const getMonthLabel = (firstDate, lastDate) => {
-    const firstMonth = firstDate.toLocaleString('default', { month: 'short' });
-    const lastMonth = lastDate.toLocaleString('default', { month: 'short' });
-
-    if (firstMonth === lastMonth) {
-      return `${firstMonth}`; // Single month
-    } else {
-      return `${firstMonth}-${lastMonth}`; // Range of months
-    }
-  };
-
-  const currentWeekDates = getWeekDates(currentWeekOffset);
-  const previousWeekDates = getWeekDates(currentWeekOffset - 1);
-
-  const handleDayClick = (day) => {
-    if (onDayClick) {
-      onDayClick(day); // Call the parent function when a day is clicked
-    }
-  };
-
-  const handlePreviousWeekClick = () => {
-    setCurrentWeekOffset(currentWeekOffset - 1);
-  };
-
-  const handleNextWeekClick = () => {
-    setCurrentWeekOffset(currentWeekOffset + 1);
-  };
-
-  const renderDay = (week, day, dayNumber) => {
-    const hasTrainingSession = trainingData[week] && trainingData[week][day];
-
-    return (
-      <Grid
-        item
-        key={`${week}-${day}`}
-        sx={{
-          textAlign: 'center',
-          margin: '0 1px',
-          position: 'relative',
-        }}
-      >
-        <Typography variant="caption" display="block" sx={{ margin: '0' }}>
-          {day}
-        </Typography>
-        <IconButton
-          onClick={() => handleDayClick({ week, day })}
-          sx={{ padding: '0px', position: 'relative' }}
-        >
-          <Badge
-            color="error"
-            variant="dot"
-            invisible={!hasTrainingSession}
-            overlap="circular"
-          >
-            <CalendarTodayIcon />
-          </Badge>
-          <Typography
-            variant="caption"
-            display="block"
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -30%)',
-              fontSize: '0.75rem',
-              fontWeight: 'bold',
-              color: 'black',
-              pointerEvents: 'none',
-            }}
-          >
-            {dayNumber}
-          </Typography>
-        </IconButton>
-      </Grid>
-    );
-  };
-
-  const renderWeekLabel = (weekDates) => (
-    <Typography
-      variant="body2"
-      sx={{
-        fontSize: '1rem',
-        marginBottom: '5px',
-        padding: '0',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <span style={{ fontWeight: 'bold', marginRight: '5px' }}>
-        Week {weekDates.weekNumber},
-      </span>
-      <span style={{ margin: '0 5px', color: '#555' }}>
-        {weekDates.monthLabel} {weekDates.firstDate.getFullYear()}
-      </span>
-    </Typography>
-  );
-
-  const renderWeek = (week, weekDates, weekSummary) => (
-    <Box
-      sx={{
-        textAlign: 'center',
-        margin: '0',
-        padding: '0',
-      }}
-    >
-      {renderWeekLabel(weekDates)}
-      <Grid container justifyContent="center" alignItems="center" sx={{ gap: '1px' }}>
-        {daysOfWeek.map((day, index) => renderDay(week, day, weekDates.weekDates[index].getDate()))}
-      </Grid>
-      {/* Accordion to show/hide WeekSummary */}
-      <Accordion
-          sx={{
-            boxShadow: 'none', // Remove shadow
-            border: 'none', // Remove border around accordion
-            '&::before': { // Remove the default before pseudo-element border
-              display: 'none',
-            },
-          }}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-          sx={{
-            borderBottom: 'none', // Remove bottom border on summary
-            padding: '0px', // Remove padding if needed
-            minHeight: '0px', // Adjust the minimum height if needed
-            '& .MuiAccordionSummary-content': {
-              margin: '0', // Remove margin
-            },
-          }}
-        >
-        {/* Make the font smaller */}
-          <Typography variant="subtitle2" sx={{ fontSize: '0.875rem' }}></Typography>
-        </AccordionSummary>
-        <AccordionDetails
-          sx={{
-            padding: '0px', // Remove padding if needed
-            borderTop: 'none', // Remove top border on details
-          }}
-        >
-        {/* Apply a smaller font size to the WeekSummary component if needed */}
-        <WeekSummary summary={weekSummary} sx={{ fontSize: '0.875rem' }} />
-        </AccordionDetails>
-      </Accordion>
-    </Box>
-  );
+  const isSelected =
+    !outsideCurrentMonth && highlightedDays.includes(day.format("YYYY-MM-DD"));
 
   return (
-    <Box sx={{ padding: '0' }}>
-      <Paper
-        elevation={3}
-        sx={{
-          padding: '4px',
-          marginBottom: '0',
-          display: 'flex',
-          alignItems: 'center',
-          width: 'fit-content',
-          flexShrink: 1,
-          margin: '0 auto',
-          flexDirection: { xs: 'column', md: 'row' },
-        }}
-      >
-        <IconButton onClick={handlePreviousWeekClick} sx={{ padding: '0px' }}>
-          <ChevronLeftIcon />
-        </IconButton>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            flexGrow: 0,
-            gap: '10px',
-            flexWrap: 'wrap',
-            margin: '0',
-          }}
-        >
-          {renderWeek('previousWeek', previousWeekDates, weekSummaries.previousWeek)}
-          {renderWeek('currentWeek', currentWeekDates, weekSummaries.currentWeek)}
-        </Box>
-        {currentWeekOffset < 0 && (
-          <IconButton onClick={handleNextWeekClick} sx={{ padding: '0px' }}>
-            <ChevronRightIcon />
-          </IconButton>
-        )}
-      </Paper>
+    <Badge
+      key={day.toString()}
+      overlap="circular"
+      badgeContent={isSelected ? "•" : null} // Display a dot or any other content
+      color="primary" // Green badge for days with activities
+    >
+      <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
+    </Badge>
+  );
+};
 
-      {selectedDay && <ActivityDetails selectedDay={selectedDay} trainingData={trainingData} />}
-    </Box>
+const WeekOverview = ({ onDayClick, trainingData }) => {
+  const today = dayjs();
+  const [highlightedDays, setHighlightedDays] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(today); // Use state to control the selected date
+
+  useEffect(() => {
+    const newHighlightedDays = [];
+
+    // Assuming trainingData contains a structure like:
+    // { 'YYYY-MM-DD': [{ activityName, duration }, ...] }
+    Object.keys(trainingData || {}).forEach((day) => {
+      newHighlightedDays.push(day);
+    });
+
+    setHighlightedDays(newHighlightedDays);
+  }, [trainingData]);
+
+  return (
+    <ThemeProvider theme={THEME}>
+      <Box>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <StaticDatePicker
+            localeText={{ toolbarTitle: "Select Date to see activities" }} // Custom label
+            value={selectedDay}
+            onChange={(newDate) => {
+              setSelectedDay(newDate); // Update the selected date in state
+              const formattedDate = dayjs(newDate).format("YYYY-MM-DD");
+              onDayClick(formattedDate); // Trigger the callback when a day is selected
+            }}
+            disableHighlightToday={false}
+            showToolbar={false} // Disable the toolbar
+            slots={{
+              day: CustomDay, // Use custom day component
+            }}
+            slotProps={{
+              day: {
+                highlightedDays, // Pass highlighted days for training sessions
+              },
+            }}
+            sx={{ transform: "scale(0.7)" }} // Reduce the size by 30%
+          />
+        </LocalizationProvider>
+      </Box>
+    </ThemeProvider>
   );
 };
 
