@@ -1,0 +1,30 @@
+/* WeekOverview.css */
+.week-overview-heading {
+    font-size: 10px; /* Adjust font size */
+    margin-bottom: 0.5rem; /* Optional: Add space below the heading */
+    text-align:center
+  }
+  
+/* Style the week number as previously */
+.react-datepicker__week-number {
+  color: #FF5733; /* Change the color to your preference */
+  font-weight: bold; /* Optional: Make the week numbers bold */
+  background-color: #f0f0f0; /* Optional: Add a background color */
+}
+
+/* Add a custom class for days with activities */
+.day-with-activity {
+  position: relative;
+  border-radius: 50%;
+}
+
+.day-with-activity::after {
+  content: '•'; /* A dot to act as a badge */
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 1.2rem; /* Adjust size */
+  color: #ff5722; /* Badge color */
+  font-weight: bold;
+}
+

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Typography } from '@mui/material';
-import WeekOverview from './components/WeekOverview'; // Import the new WeekOverview component
-import ActivityDetails from './components/ActivityDetails';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import CenterScreen from './components/CenterScreen';
+import RightSideScreen from './components/RightSideScreen';
 import dayjs from 'dayjs';
 
-// Updated training data structure using 'YYYY-MM-DD' as keys
+// Sample training data
 const trainingData = {
   '2024-09-09': [{ name: 'Cycling', duration: 60 }],
   '2024-09-11': [{ name: 'Running', duration: 30 }],
@@ -21,22 +21,27 @@ const Dashboard = () => {
   };
 
   return (
-    <Box sx={{ padding: 4, display: 'flex', justifyContent: 'space-between' }}>
-      {/* Main content on the left */}
-      <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="h4" gutterBottom>
-          Dashboard
-        </Typography>
+    <div className="container-fluid p-1 border"> {/* Bootstrap container-fluid with 1px padding and border */}
+      {/* AppBar */}
+      <nav className="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div className="container-fluid">
+          <span className="navbar-brand">TrainingLog</span>
+        </div>
+      </nav>
 
-        {/* Activity Details Component */}
-        <ActivityDetails selectedDay={selectedDay} trainingData={trainingData} />
-      </Box>
+      {/* Main Content */}
+      <div className="row mt-1"> {/* Bootstrap row */}
+        {/* Center Screen for Activity Details */}
+        <div className="col-lg-10 col-md-9 col-sm-12 p-1 border"> {/* Wider Bootstrap column for CenterScreen */}
+          <CenterScreen selectedDay={selectedDay} trainingData={trainingData} />
+        </div>
 
-      {/* WeekOverview (DateCalendar) on the right */}
-      <Box sx={{ minWidth: '250px', marginLeft: '20px' }}>
-        <WeekOverview trainingData={trainingData} onDayClick={handleDayClick} />
-      </Box>
-    </Box>
+        {/* Right Side Screen for Week Overview */}
+        <div className="col-lg-2 col-md-3 col-sm-12 p-1 border"> {/* Slimmer Bootstrap column for RightSideScreen */}
+          <RightSideScreen trainingData={trainingData} onDayClick={handleDayClick} />
+        </div>
+      </div>
+    </div>
   );
 };
 
